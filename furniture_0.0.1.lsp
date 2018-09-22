@@ -46,8 +46,8 @@
 
 (setq pts_2d_geom (list pt_0 pt_1 pt_2 pt_3 pt_4))
 
-(layermake "AC-Geom2d" 1) ;1=red 4=cyan
-(command ".-layer" "_set" "AC-Geom2d" "" )
+
+(command ".-layer" "_set" layer_geom2d "" )
 (LWPoly pts_2d_geom)
 
 	)
@@ -68,8 +68,8 @@
 	(setq pts_workarea (list pt_0 pt_1 pt_2 pt_3))
 
 	;generating geom and bind geom to layer
-	(layermake "AC-Working_area" 4) ;1=red 4=cyan
-	(command ".-layer" "_set" "AC-Working_area" "" )
+
+	(command ".-layer" "_set" layer_geom2d_wa "" )
 	(LWPoly pts_workarea)
 
   
@@ -77,6 +77,8 @@
   
   
 )
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun LWPoly (pts)
  (entmakex (append (list
@@ -112,6 +114,7 @@
 
 )
 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun layermake (layername layercolor)
 	(entmake
@@ -127,9 +130,11 @@
   )
 )
 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun attdef (defval pt flag height)
 
+(command ".-layer" "_set" layer_att "" )
 
  (entmakex (list (cons 0 "ATTDEF")
                  (cons 10   pt) ;point
@@ -144,13 +149,14 @@
 					 ))
           ;  (setq entities (append (entlast)))
  
- (setq entities (cons entities entlast))
+ 
  (setq entitiy_geom2d (entlast))
- (ssadd entitiy_geom2d set2d)
+ 
  
   (ssadd  entitiy_geom2d set2d)
  )
 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun attdata ()
 	(setq txtsize 180)
@@ -171,6 +177,26 @@
 )
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  (defun rect2d (pt width depth)
+    
+    
+    (setq pt_input_x (nth 0 pt))
+    
+    (setq p1 (pt))
+    (setq p2 (list ))
+    
+  )
+    
+  
+  
+  
+  (defun geom_3d_table ()
+    
+    
+  )
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;END FUNCITON DEFINITION;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -179,6 +205,17 @@
   (setq ent2d '())
 
 
+
+  ;layer name
+  (setq layer_geom2d "AC-Geom2d")
+  (setq layer_geom2d_wa "AC-Working_area")
+  (setq layer_att "AC-Text")
+  
+  
+  ;layer generation:
+  (layermake layer_geom2d 1) ;1=red 4=cyan
+  (layermake layer_geom2d_wa 4) ;1=red 4=cyan
+  (layermake layer_att 255) ;255 = white
 
 	;get basic values and scale them to millimiter
 	(setq width_cm (getreal "\Enter furniture WIDTH [cm]: "))
@@ -189,8 +226,8 @@
 
 
 
-	(setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"))
-
+	(setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP"))
+  ;7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"
 	
 	(cond
 		((= furniture_typ 1)
@@ -251,24 +288,7 @@
 )
 
 
-(setq loopbreaker 0)
-;(command "._block" furniture_dim blockbasepoint  
-         
-         (while (<= loopbreaker leng_ent)
-           (setq loopbreaker (+ loopbreaker  1))
-           (print "lummel")
-           (setq ent_block (nth loopbreaker '(entities)))
-           
-           (print "ent_block ::")
-           (print ent_block)
-           ;
-           ;(!ent_block) ""
-         
-         
-         ;!entities 
-         "")
 
-;)
 
 
 
