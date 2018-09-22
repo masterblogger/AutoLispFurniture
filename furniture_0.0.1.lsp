@@ -19,7 +19,7 @@
 
 
 
-(defun c:AC-Furniture ( / entities)
+(defun c:AC-Furniture ( / entities set2d furniture_dim)
 
 
 ;(setq entities (list))
@@ -31,7 +31,7 @@
 	;;;;;;;;;;;;;;BEGIN FUNCITON DEFINITION;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	(defun geom_2d_rectang ()
+	(defun geom_2d_rectang ( / pt_1 pt_2 pt_3 pt_4)
 ;points will be generated anti clockwise
 
 	(setq pt_0  '(0 0 0))
@@ -71,12 +71,11 @@
 	(layermake "AC-Working_area" 4) ;1=red 4=cyan
 	(command ".-layer" "_set" "AC-Working_area" "" )
 	(LWPoly pts_workarea)
-	;(print (length pts_workarea))
 
-  ;(setq entities (append entities (list entlast)))
   
   
-  ;(setq entities (entlast))
+  
+  
 )
 
 (defun LWPoly (pts)
@@ -148,7 +147,6 @@
  (setq entities (cons entities entlast))
  (setq entitiy_geom2d (entlast))
  (ssadd entitiy_geom2d set2d)
- 
  
   (ssadd  entitiy_geom2d set2d)
  )
@@ -272,7 +270,7 @@
 
 ;)
 
-(command "._block" furniture_dim blockbasepoint set2d "")
+
 
 
 ; Comming Soon 
@@ -289,8 +287,21 @@
 ;)
 ;)
 
+(command "._block" furniture_dim blockbasepoint set2d  "" )
 
-(setq entities nil)
+(setq insert_pt (getpoint "Pick insert Point!"))
 
-(command "._insert" "")
+
+  (command "._insert" furniture_dim  "Scale" 1 insert_pt 0 "")
+  ;
+  ;(entmake
+  ;    (list
+  ;          (cons 100 "acdbentity")
+  ;          (cons 100 "acdbblockreference")
+  ;          (cons 2 furniture_dim)
+  ;          (cons 10 blockbasepoint)
+  ;          
+  ;    )
+  ;)
+
 )
