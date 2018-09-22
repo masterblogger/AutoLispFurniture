@@ -19,10 +19,10 @@
 
 
 
-(defun c:AC-Furniture ()
+(defun c:AC-Furniture ( / entities)
 
 
-
+;(setq entities (list))
 
 
 
@@ -72,6 +72,11 @@
 	(command ".-layer" "_set" "AC-Working_area" "" )
 	(LWPoly pts_workarea)
 	;(print (length pts_workarea))
+
+  ;(setq entities (append entities (list entlast)))
+  
+  
+  ;(setq entities (entlast))
 )
 
 (defun LWPoly (pts)
@@ -81,7 +86,32 @@
 												 	(cons 100 "AcDbEntity")
                          	(cons 90 (length pts))
                          	(cons 70 0)) ;close 1 open 0
-                   (mapcar (function (lambda (p) (cons 10 p))) pts))))
+                   (mapcar (function (lambda (p) (cons 10 p))) pts)
+          )
+
+  )
+  ;(setq entities (append list entlast entlast))
+  ;(setq entities (append entities entlast))
+  ;(setq entities (entlast))
+  (setq entities (cons entities entlast ))
+  (setq entity (entlast) )
+  (print "_____________________")
+  (print "_____________________")
+  (print entity)
+  (print "_____________________")
+  (print "_____________________")
+  
+  (setq ent_2d (append ent_2d '(entity)))
+  
+  
+  
+
+  
+  
+  (ssadd  entity set2d)
+  
+
+)
 
 
 (defun layermake (layername layercolor)
@@ -112,29 +142,44 @@
 								 (cons 70 flag)
 								 (cons 72 1) ; horizontal justification
 								 (cons 73 1) ;vertical justification
-					 )))
+					 ))
+          ;  (setq entities (append (entlast)))
+ 
+ (setq entities (cons entities entlast))
+ (setq entitiy_geom2d (entlast))
+ (ssadd entitiy_geom2d set2d)
+ 
+ 
+  (ssadd  entitiy_geom2d set2d)
+ )
 
 
 (defun attdata ()
 	(setq txtsize 180)
 	(setq pt (list (/ width  2) (* depth 0.6) 0 ))
-	(attdef furniture_name pt 1 txtsize)
+	(attdef furniture_name pt 2 txtsize)
 
-	(setq furniture_dim (strcat (rtos width_cm) " x " (rtos depth_cm )))
-	(print  "this is furniture dim")
+	(setq furniture_dim (strcat (rtos width_cm) "x" (rtos depth_cm )))
+	
 	(print furniture_dim)
-
-
+  
 
 	(setq pt (list (/ width  2) (- (* depth 0.6) (* txtsize 1.5)) 0 ))
-	(attdef furniture_dim pt 1 txtsize)
-	(print "blub")
+	
+  
+  (attdef furniture_dim pt 2 txtsize)
+	
 
 )
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;END FUNCITON DEFINITION;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;variables
+  (setq set2d (ssadd))
+  (setq ent2d '())
+
 
 
 	;get basic values and scale them to millimiter
@@ -148,26 +193,28 @@
 
 	(setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"))
 
-		;(geom_2d_rectang)
-		;(geom_2d_workingarea)
-	;
+	
 	(cond
 		((= furniture_typ 1)
-			(geom_2d_rectang)
+			(setq furniture_name "Filling Cabinet")
+      (geom_2d_rectang)
 
 		)
 
 		((= furniture_typ 2)
-			(geom_2d_rectang)
+			(setq furniture_name "Shelf")
+      (geom_2d_rectang)
 
 		)
 
 		((= furniture_typ 3)
-			(geom_2d_rectang)
+			(setq furniture_name "Sideboard")
+      (geom_2d_rectang)
 
 		)
 		((= furniture_typ 4)
-			(geom_2d_rectang)
+			(setq furniture_name "Table")
+      (geom_2d_rectang)
 
 		)
 		((= furniture_typ 5)
@@ -179,6 +226,7 @@
 		)
 
 		((= furniture_typ 6)
+      (setq furniture_name "Filling Cabinet UP")
 			(geom_2d_rectang)
 
 		)
@@ -191,4 +239,58 @@
 ; 	;
 
 
+
+(setq furniture_dim (strcat furniture_name (rtos width_cm) "x" (rtos depth_cm )))
+(setq blockbasepoint (list 0 0 0))
+
+(setq loopbreaker 0)
+(setq leng_ent (length '(entities)))
+
+(while  (<= loopbreaker leng_ent)
+  (setq loopbreaker (+ loopbreaker  1))
+  (print "loop")
+  (print loopbreaker)
+)
+
+
+(setq loopbreaker 0)
+;(command "._block" furniture_dim blockbasepoint  
+         
+         (while (<= loopbreaker leng_ent)
+           (setq loopbreaker (+ loopbreaker  1))
+           (print "lummel")
+           (setq ent_block (nth loopbreaker '(entities)))
+           
+           (print "ent_block ::")
+           (print ent_block)
+           ;
+           ;(!ent_block) ""
+         
+         
+         ;!entities 
+         "")
+
+;)
+
+(command "._block" furniture_dim blockbasepoint set2d "")
+
+
+; Comming Soon 
+;(entmake
+;      (list
+;            (cons 0 "BLOCK")
+;            (cons 100 "AcDbEntity")
+;            (cons 102            entities )
+;            (cons 100 "AcDbBlockBegin")
+;            (cons 2 "blockname")
+;            (cons 70 2)
+;            (cons 10 (list 0 0 0)) ;basepoint
+;
+;)
+;)
+
+
+(setq entities nil)
+
+(command "._insert" "")
 )
