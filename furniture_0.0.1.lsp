@@ -55,7 +55,16 @@
 
 (defun geom_2d_workingarea ()
 ;generates working area default values references to ASR (Arbeitstaettenrichtlinie / Common German Labor Facility Guide )
-	(setq depth_inv -1000)
+	
+  (if (= furniture_typ 5) 
+    (progn ; then predicate
+      (print "furniutre Typ 5 desk" )
+      (setq depth_inv -1000)
+     )
+    (
+      setq depth_inv (* width -0.5)
+    )
+  )
 
 	(setq pt_0 (list 0 0 0))
 	(setq pt_1 (list 0 depth_inv 0))
@@ -92,29 +101,81 @@
           )
 
   )
-  ;(setq entities (append list entlast entlast))
-  ;(setq entities (append entities entlast))
-  ;(setq entities (entlast))
-  (setq entities (cons entities entlast ))
-  (setq entity (entlast) )
-  (print "_____________________")
-  (print "_____________________")
-  (print entity)
-  (print "_____________________")
-  (print "_____________________")
-  
-  (setq ent_2d (append ent_2d '(entity)))
-  
   
   
 
   
-  
+  (setq entity (entlast))
   (ssadd  entity set2d)
   
 
 )
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  (defun geom_2d_swingdoor ()
+    ;wallthickness
+
+    
+    (defun swing_door ()
+      (setq radius (- (/ width 2 ) wallthickness))
+    (entmake 
+      (list 
+            (cons  0 "ARC")
+            (cons 100 "AcDbArc")
+            (cons 100 "AcDbCircle")
+            (cons 10 center_circle)
+            (cons 40 radius)
+            (cons 50 start_ang)
+            (cons 51 end_ang)
+            
+      )
+      
+      )
+    
+    (ssadd  (entlast) set2d)
+    )
+    
+    ;set raidus
+    
+    ;left swing door arc
+    (setq center_circle (list (- width wallthickness) 0 0))
+    (setq start_ang (* pi (/ -180 180.0)))
+    (setq end_ang (* pi (/ -90 180.0)))  
+    (swing_door)
+    
+    ;draw line of swing door
+    (setq pt_1 (list wallthickness 0 0))
+    (setq pt_2 (list wallthickness (+ depth_inv wallthickness) 0))
+    (setq pts_door (list pt_1 pt_2))
+    (LWPoly pts_door)
+    
+    
+    ;right swing door arc
+    (setq center_circle (list wallthickness 0 0))
+    
+    (setq start_ang (* pi (/ -90 180.0)))
+    (setq end_ang (* pi (/ 0 180.0)))  
+    (swing_door)
+    
+    ;draw line of swing door
+    (setq pt_1 (list (- width wallthickness) 0 0))
+    (setq pt_2 (list (- width wallthickness) (+ depth_inv wallthickness) 0))
+    (setq pts_door (list pt_1 pt_2))
+    (LWPoly pts_door)
+    
+    
+    
+    
+
+    
+    
+    
+    (print "test 20180923")
+    
+    )
+  
+  
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun layermake (layername layercolor)
@@ -179,7 +240,7 @@
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
-  (defun rect2d (pt width depth )
+  (defun rect2d (pt width_rectangle depth_rectangle )
     
     
     (setq pt_input_x (nth 0 pt))
@@ -187,10 +248,10 @@
     
     
     (setq pt1 pt)
-    (setq pt2 (list (+ pt_input_x width) pt_input_y 0 ))
+    (setq pt2 (list (+ pt_input_x width_rectangle) pt_input_y 0 ))
     
-    (setq pt3 (list (+ pt_input_x width) (+ pt_input_y depth) 0 ))
-    (setq pt4 (list pt_input_x (+ pt_input_y depth) 0))
+    (setq pt3 (list (+ pt_input_x width_rectangle) (+ pt_input_y depth_rectangle) 0 ))
+    (setq pt4 (list pt_input_x (+ pt_input_y depth_rectangle) 0))
     
     (print "pt_inmput_x")
     (print pt_input_x)
@@ -198,19 +259,50 @@
     (print "pt4 XXX")
     (print pt4)
     
-    (setq pts_foot (list pt1 pt2 pt3 pt4))
+    (setq pts_foot (list pt1 pt2 pt3 pt4 pt1))
     (print "pts food")
     (print pts_foot)
     
-    ;(LWPoly pts_foot)
+    (LWPoly pts_foot)
+    
+    
+    ;(setq entitiy_geom2d(entlast))
+    ;(ssadd  entitiy_geom2d set2d)
   )
    
    
-   (rect2d '(5 15 0) 5 10)
+   
   
+  (defun geom3d_extrusion ()
+    
+    
+    )
   
   
   (defun geom_3d_table ()
+    ;generate table foot and table plate as 3d polysolid
+    (setq dist_margin 50)
+    (setq setfood (ssadd))
+    
+    ;Points for table foot
+    (setq 2d_foot_1 (list dist_margin dist_margin 0))
+    (setq 2d_foot_2 (list (- width dist_margin dist_margin ) dist_margin 0))
+    (setq 2d_foot_3 (list (- width dist_margin dist_margin ) (- depth dist_margin dist_margin) 0))
+    (setq 2d_foot_4 (list dist_margin (- depth dist_margin dist_margin) 0))
+    
+    ;generate 2d_projection
+    (rect2d 2d_foot_1 dist_margin dist_margin)
+    (ssadd  (entlast) setfood)
+    
+    (rect2d 2d_foot_2 dist_margin dist_margin)
+    (ssadd  (entlast) setfood)
+    
+    (rect2d 2d_foot_3 dist_margin dist_margin)
+    (ssadd  (entlast) setfood)
+    
+    (rect2d 2d_foot_4 dist_margin dist_margin)
+    (ssadd  (entlast) setfood)
+    
     
     
   )
@@ -221,9 +313,11 @@
 
   ;variables
   (setq set2d (ssadd))
-  (setq ent2d '())
+  
+  
+  (setq wallthickness 20)
 
-
+  
 
   ;layer name
   (setq layer_geom2d "AC-Geom2d")
@@ -252,29 +346,38 @@
 		((= furniture_typ 1)
 			(setq furniture_name "Filling_Cabinet")
       (geom_2d_rectang)
+      (geom_2d_workingarea)
+      (geom_2d_swingdoor)
 
 		)
 
 		((= furniture_typ 2)
 			(setq furniture_name "Shelf")
       (geom_2d_rectang)
+      (geom_2d_workingarea)
 
 		)
 
 		((= furniture_typ 3)
 			(setq furniture_name "Sideboard")
       (geom_2d_rectang)
+      (geom_2d_workingarea)
 
 		)
 		((= furniture_typ 4)
 			(setq furniture_name "Table")
+      
       (geom_2d_rectang)
+      
+      
+      (geom_3d_table)
 
 		)
 		((= furniture_typ 5)
 
 			(setq furniture_name "Desk")
 			(geom_2d_rectang)
+      
 			(geom_2d_workingarea)
 
 		)
@@ -282,6 +385,8 @@
 		((= furniture_typ 6)
       (setq furniture_name "Filling Cabinet UP")
 			(geom_2d_rectang)
+      (geom_2d_workingarea)
+      (geom_2d_swingdoor)
 
 		)
 )
@@ -290,7 +395,7 @@
 (attdef furniture_name pt 1 180)
 
 (attdata)
-; 	;
+; 	
 
 
 
