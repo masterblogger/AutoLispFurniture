@@ -73,7 +73,8 @@
 	(LWPoly pts_workarea)
 
   
-  
+  (print "pts Workpsace")
+  (print pts_workarea)
   
   
 )
@@ -178,16 +179,34 @@
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
-  (defun rect2d (pt width depth)
+  (defun rect2d (pt width depth )
     
     
     (setq pt_input_x (nth 0 pt))
+    (setq pt_input_y (nth 1 pt))
     
-    (setq p1 (pt))
-    (setq p2 (list ))
     
+    (setq pt1 pt)
+    (setq pt2 (list (+ pt_input_x width) pt_input_y 0 ))
+    
+    (setq pt3 (list (+ pt_input_x width) (+ pt_input_y depth) 0 ))
+    (setq pt4 (list pt_input_x (+ pt_input_y depth) 0))
+    
+    (print "pt_inmput_x")
+    (print pt_input_x)
+    
+    (print "pt4 XXX")
+    (print pt4)
+    
+    (setq pts_foot (list pt1 pt2 pt3 pt4))
+    (print "pts food")
+    (print pts_foot)
+    
+    ;(LWPoly pts_foot)
   )
-    
+   
+   
+   (rect2d '(5 15 0) 5 10)
   
   
   
@@ -231,7 +250,7 @@
 	
 	(cond
 		((= furniture_typ 1)
-			(setq furniture_name "Filling Cabinet")
+			(setq furniture_name "Filling_Cabinet")
       (geom_2d_rectang)
 
 		)
@@ -312,7 +331,7 @@
 (setq insert_pt (getpoint "Pick insert Point!"))
 
 
-  (command "._insert" furniture_dim  "Scale" 1 insert_pt 0 "")
+  (command "._insert" furniture_dim  "_Scale" 1 insert_pt 0 "")
   ;
   ;(entmake
   ;    (list
