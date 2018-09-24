@@ -120,6 +120,9 @@
     (setq txtsize 110)
     (setq pt (list (/ width 2) (- (* depth 0.6) (* txtsize 3)) 0))
     (setq furniture_height 600)
+    (setq furniture_height (getint "Enter furniture heigt[cm]"))
+    
+    
 
 
     (setq att_furniture_height (strcat (rtos furniture_height) "[cm]"))
