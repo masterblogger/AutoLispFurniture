@@ -1,21 +1,19 @@
 
-;future features" Generates simply 2d & 3D rectangular furniture elments
-;future features"Generates simply 2d & 3D rectangular furniture elments
- ;
- ; GNU GENERAL PUBLIC LICENSE Version 3
- ;
- ; Version 0.0.1
- ;
- ; by Joern Rettweiler, 2018 septembre 08
- ;
- ;
- ; Tested with brainless computation
- ;
- ; NO WARRANTY
-
- ; load this script with following command "appload"
-
- ;
+;    Furniture, generates basic furniture, just by user input values of width and depth (and height in some cases)
+;    Copyright (C) 2018  Joern Rettweiler
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 
