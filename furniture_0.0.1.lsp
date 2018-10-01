@@ -56,7 +56,7 @@
 
     (if (= furniture_typ 5)
       (progn  ; then predicate
-        (print "furniutre Typ 5 desk")
+        
         (setq depth_inv -1000)
       )
       (
@@ -80,8 +80,8 @@
     (LWPoly pts_workarea)
 
 
-    (print "pts Workpsace")
-    (print pts_workarea)
+    ;(print "pts Workspace")
+    ;(print pts_workarea)
 
 
   )
@@ -115,15 +115,15 @@
   (defun shelf_heights ()
     ; Add attribut with height
 
-    (setq txtsize 110)
+    (setq txtsize 80)
     (setq pt (list (/ width 2) (- (* depth 0.6) (* txtsize 3)) 0))
-    (setq furniture_height 600)
-    (setq furniture_height (getint "Enter furniture heigt[cm]"))
+    (setq furniture_height_cm 600)
+    (setq furniture_height_cm (getint "Enter furniture heigt[cm]"))
     
     
 
 
-    (setq att_furniture_height (strcat (rtos furniture_height) "[cm]"))
+    (setq att_furniture_height (strcat (rtos furniture_height_cm) "[cm]"))
     (attdef att_furniture_height pt 2 txtsize)
   )
 
@@ -187,7 +187,7 @@
 
 
 
-    (print "test 20180923")
+    
 
   )
 
@@ -238,7 +238,7 @@
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (defun attdata ()
-    (setq txtsize 110)
+    (setq txtsize 80) 
     (setq pt (list (/ width 2) (* depth 0.6) 0))
     (attdef furniture_name pt 2 txtsize)
 
@@ -333,6 +333,9 @@
       (setq pts_foot (list pt_1 pt_2 pt_3 pt_4 pt_1))
 
 
+
+
+
       (command ".-layer" "_set" layer_geom2d "")
       (LWPoly pts_foot)
 
@@ -359,7 +362,12 @@
     (geom_food_2d 0)
 
 ;second foot
-    (geom_food_2d (- width (* 2 dist_margin) food_width))
+
+
+  (setq temp (- width foot_width (* 2 dist_margin)))
+
+  
+    (geom_food_2d temp)
 
 
 
@@ -405,6 +413,7 @@
       y_arrow_line -100
       width_upperline 0.7
       width_line (* width width_upperline)
+      width_lowerline (- width width_line)
     )
 
 ;upper line
@@ -418,14 +427,77 @@
 
 ;lower line
     (setq pt_3x (- width x_arrow_line))
-    (setq pt_3 (list pt_3x (* 2 y_arrow_line) 0))
-    (setq pt_4 (list (- pt_3x width_line) (* 2 y_arrow_line) 0))
+    (setq pt_3 (list width_lowerline (* 2 y_arrow_line) 0))
+    (setq pt_4 (list pt_3x (* 2 y_arrow_line) 0))
 
     (setq pts (list pt_3 pt_4))
     (LWPoly pts)
 
-  )
 
+;arrow
+    (defun sideboard_arrow (insert_arrow_pt orientation)
+      (if (= orientation 0)
+      (setq
+        arrow_width 70
+        arrow_depth 50
+      )
+      (setq
+        arrow_width -70
+        arrow_depth -50
+      )
+      
+      )
+      
+      
+      (setq  
+        arrow_max_x (- (car insert_arrow_pt) arrow_width)
+        arrow_pt1_y (+ (cadr insert_arrow_pt) (* 0.5 arrow_depth))
+        arrow_pt2_y (- (cadr insert_arrow_pt) (* 0.5 arrow_depth))
+        
+        arrow_pt1 (list (car insert_arrow_pt) arrow_pt1_y 0 )
+        arrow_pt2 (list (car insert_arrow_pt) arrow_pt2_y 0)
+        arrow_pt3 (list arrow_max_x (cadr insert_arrow_pt) 0)
+      
+        pts (list arrow_pt1 arrow_pt2 arrow_pt3 arrow_pt1)
+      )
+      
+      (LWPoly pts)
+      
+      (print arrow_max_x)
+    )
+    ;(print arrow_max_x)
+  
+    
+    (print "__________________________________________________")
+    (sideboard_arrow pt_1 0)
+    (sideboard_arrow pt_4 1)
+    (print "__________________________________________________")
+
+      
+  )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun block_build_insert_shelfs ()
+  (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm) "_" (rtos furniture_height_cm) ) )
+
+  (setq blockbasepoint (list 0 0 0))
+
+)
+
+(defun block_build_insert_tables ()
+  (setq furniture_blockname (strcat furniture_name "_"  (rtos width_cm) "x" (rtos depth_cm)) )
+
+  (setq blockbasepoint (list 0 0 0))
+
+)
+
+
+
+(defun misc ()
+  (setq pt (list (/ width 2) (* depth 0.6) 0))
+  (attdef furniture_name pt 1 80)
+
+  (attdata)
+)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;END FUNCITON DEFINITION;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -470,6 +542,10 @@
 
         (geom_2d_workingarea)
         (geom_2d_swingdoor)
+        
+        
+        (misc)
+        (block_build_insert_shelfs)
 
     )
 
@@ -480,6 +556,11 @@
 
 
         (geom_2d_workingarea)
+        
+        
+        
+        (misc)
+        (block_build_insert_shelfs)
 
     )
 
@@ -490,6 +571,10 @@
 
         (geom_2d_workingarea)
         (geom2d_sideboard)
+        
+        
+        (misc)
+        (block_build_insert_shelfs)        
 
     )
     ((= furniture_typ 4)
@@ -499,6 +584,9 @@
 
 
         (geom_3d_table)
+        
+        (misc)
+        (block_build_insert_tables)
 
     )
     ((= furniture_typ 5)
@@ -509,6 +597,10 @@
         (geom_2d_workingarea)
 
         (geom2d_desk_foot)
+        
+        
+        (misc)
+        (block_build_insert_tables)
 
     )
 
@@ -520,14 +612,14 @@
         (geom_2d_workingarea)
         (geom_2d_swingdoor)
 
+
+        (misc)
+        (block_build_insert_shelfs)
+
     )
   )
 
-  (setq pt (list (/ width 2) (* depth 0.6) 0))
-  (attdef furniture_name pt 1 180)
 
-  (attdata)
-; 	
 
 
 ;test
@@ -539,18 +631,16 @@
 
 
 
-  (setq furniture_dim (strcat furniture_name (rtos width_cm) "x" (rtos depth_cm)))
 
-  (setq blockbasepoint (list 0 0 0))
 
-  (setq loopbreaker 0)
-  (setq leng_ent (length '(entities)))
+  ;(setq loopbreaker 0)
+  ;(setq leng_ent (length '(entities)))
 
-  (while (<= loopbreaker leng_ent)
-    (setq loopbreaker (+ loopbreaker 1))
-    (print "loop")
-    (print loopbreaker)
-  )
+ ; (while (<= loopbreaker leng_ent)
+  ;  (setq loopbreaker (+ loopbreaker 1))
+   ; (print "loop")
+   ; (print loopbreaker)
+  ;)
 
 
 
@@ -572,12 +662,12 @@
 ;)
 ;)
 
-  (command "._block" furniture_dim blockbasepoint set2d "")
+  (command "._block" furniture_blockname blockbasepoint set2d "")
 
   (setq insert_pt (getpoint "Pick insert Point!"))
 
 
-  (command "._insert" furniture_dim "_Scale" 1 insert_pt 0 "")
+  (command "._insert" furniture_blockname "_Scale" 1 insert_pt 0 "")
   ;
   ;(entmake
   ;    (list
