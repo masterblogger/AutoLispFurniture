@@ -1,6 +1,6 @@
 
-;    Furniture, generates basic furniture, just by user input values of width and depth (and height in some cases)
-;    Copyright (C) 2018  Joern Rettweiler
+;    Furniture, generates basic furniture,  by user input of width and depth (and height in some cases)
+;    Copyright (C) 2018 octobre  Joern Rettweiler
 ;
 ;    This program is free software: you can redistribute it and/or modify
 ;    it under the terms of the GNU General Public License as published by
@@ -108,7 +108,10 @@
 
     (setq entity (entlast))
     (ssadd entity set2d)
-
+    
+    ;testing 
+    (setq blockelements (list ))
+    (cons blockelements (entlast))
   )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -492,7 +495,7 @@
 
 
 
-
+    (command ".-layer" "_set" layer_geom2d "")
 
     (entmake
       (list
@@ -621,7 +624,7 @@
       (cond
         ((= depth_cm 0)
             (
-              (geom_2d_table_round)
+              geom_2d_table_round
             )
         )
         (t
@@ -670,27 +673,29 @@
 
 
 
-; Comming Soon 
-;(entmake
-;      (list
-;            (cons 0 "BLOCK")
-;            (cons 100 "AcDbEntity")
-;            (cons 100 "AcDbBlockBegin")
-;            (cons 102  block_entities )
-;
-;            (cons 2 furniture_blockname)
-;            (cons 70 2)
-;            (cons 10 (list 0 0 0)) ;basepoint
-;
-;)
+
+;; Comming Soon 
+;;(entmake
+;;      (list
+;;            (cons 0 "BLOCK")
+;;            (cons 100 "AcDbEntity")
+;;            (cons 100 "AcDbBlockBegin")
+;;            (cons 102  blockelements )
+;;
+;;            (cons 2 furniture_blockname)
+;;            (cons 70 2)
+;;            (cons 10 (list 0 0 0)) ;basepoint
+;;
+;;)
 ;)
 
-  (command "._block" furniture_blockname blockbasepoint set2d "")
+
+ (command "._block" furniture_blockname blockbasepoint set2d "")
 
   (setq insert_pt (getpoint "Pick insert Point!"))
 
 
-  ;(command "._insert" furniture_blockname "_Scale" 1 insert_pt 0 "")
+  
 
   (entmake
     (list
@@ -698,7 +703,7 @@
       (cons 100 "acdbentity")
       (cons 100 "acdbblockreference")
       (cons 2 furniture_blockname)
-      (cons 10 blockbasepoint)
+      (cons 10 insert_pt)
 
     )
   )
