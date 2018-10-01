@@ -20,7 +20,7 @@
 (defun c:AC-Furniture (/ entities set2d furniture_dim)
 
 
-;(setq entities (list))
+
 
 
 
@@ -46,6 +46,8 @@
 
 
     (command ".-layer" "_set" layer_geom2d "")
+
+
     (LWPoly pts_2d_geom)
 
   )
@@ -56,7 +58,7 @@
 
     (if (= furniture_typ 5)
       (progn  ; then predicate
-        
+
         (setq depth_inv -1000)
       )
       (
@@ -80,8 +82,8 @@
     (LWPoly pts_workarea)
 
 
-    ;(print "pts Workspace")
-    ;(print pts_workarea)
+;(print "pts Workspace")
+;(print pts_workarea)
 
 
   )
@@ -107,7 +109,6 @@
     (setq entity (entlast))
     (ssadd entity set2d)
 
-
   )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,8 +120,8 @@
     (setq pt (list (/ width 2) (- (* depth 0.6) (* txtsize 3)) 0))
     (setq furniture_height_cm 600)
     (setq furniture_height_cm (getint "Enter furniture heigt[cm]"))
-    
-    
+
+
 
 
     (setq att_furniture_height (strcat (rtos furniture_height_cm) "[cm]"))
@@ -187,7 +188,7 @@
 
 
 
-    
+
 
   )
 
@@ -238,11 +239,15 @@
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (defun attdata ()
-    (setq txtsize 80) 
+    (setq txtsize 80)
     (setq pt (list (/ width 2) (* depth 0.6) 0))
     (attdef furniture_name pt 2 txtsize)
 
-    (setq furniture_dim (strcat (rtos width_cm) "x" (rtos depth_cm)))
+;if-condition because of round table
+    (if (> depth 0)
+      (setq furniture_dim (strcat (rtos width_cm) "x" (rtos depth_cm)))
+      (setq furniture_dim (strcat "Ø" (rtos width_cm)))
+    )
 
     (print furniture_dim)
 
@@ -364,9 +369,9 @@
 ;second foot
 
 
-  (setq temp (- width foot_width (* 2 dist_margin)))
+    (setq temp (- width foot_width (* 2 dist_margin)))
 
-  
+
     (geom_food_2d temp)
 
 
@@ -437,67 +442,98 @@
 ;arrow
     (defun sideboard_arrow (insert_arrow_pt orientation)
       (if (= orientation 0)
+        (setq
+          arrow_width 70
+          arrow_depth 50
+        )
+        (setq
+          arrow_width -70
+          arrow_depth -50
+        )
+
+      )
+
+
       (setq
-        arrow_width 70
-        arrow_depth 50
-      )
-      (setq
-        arrow_width -70
-        arrow_depth -50
-      )
-      
-      )
-      
-      
-      (setq  
         arrow_max_x (- (car insert_arrow_pt) arrow_width)
         arrow_pt1_y (+ (cadr insert_arrow_pt) (* 0.5 arrow_depth))
         arrow_pt2_y (- (cadr insert_arrow_pt) (* 0.5 arrow_depth))
-        
-        arrow_pt1 (list (car insert_arrow_pt) arrow_pt1_y 0 )
+
+        arrow_pt1 (list (car insert_arrow_pt) arrow_pt1_y 0)
         arrow_pt2 (list (car insert_arrow_pt) arrow_pt2_y 0)
         arrow_pt3 (list arrow_max_x (cadr insert_arrow_pt) 0)
-      
+
         pts (list arrow_pt1 arrow_pt2 arrow_pt3 arrow_pt1)
       )
-      
+
       (LWPoly pts)
-      
+
       (print arrow_max_x)
     )
     ;(print arrow_max_x)
-  
-    
+
+
     (print "__________________________________________________")
     (sideboard_arrow pt_1 0)
     (sideboard_arrow pt_4 1)
     (print "__________________________________________________")
 
-      
+
+  )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun geom_2d_table_round ()
+
+
+
+    (setq
+      cirlce_center (list (/ width 2) 0 0)
+      cirlce_radius (* 0.5 width)
+    )
+
+
+
+
+
+    (entmake
+      (list
+        (cons 0 "CIRCLE")
+        ;(cons 100 "AcDbSymbolTableRecord")
+        (cons 100 "AcDbCircle")
+        (cons 10 cirlce_center)
+        (cons 40 cirlce_radius)
+
+
+      )
+    )
+
+;add geom to entity list
+    (setq entity (entlast))
+    (ssadd entity set2d)
+
   )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defun block_build_insert_shelfs ()
-  (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm) "_" (rtos furniture_height_cm) ) )
+    (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm) "_" (rtos furniture_height_cm)))
 
-  (setq blockbasepoint (list 0 0 0))
+    (setq blockbasepoint (list 0 0 0))
 
-)
+  )
 
-(defun block_build_insert_tables ()
-  (setq furniture_blockname (strcat furniture_name "_"  (rtos width_cm) "x" (rtos depth_cm)) )
+  (defun block_build_insert_tables ()
+    (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm)))
 
-  (setq blockbasepoint (list 0 0 0))
+    (setq blockbasepoint (list 0 0 0))
 
-)
+  )
 
 
 
-(defun misc ()
-  (setq pt (list (/ width 2) (* depth 0.6) 0))
-  (attdef furniture_name pt 1 80)
+  (defun misc ()
+    (setq pt (list (/ width 2) (* depth 0.6) 0))
+    (attdef furniture_name pt 1 80)
 
-  (attdata)
-)
+    (attdata)
+  )
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;END FUNCITON DEFINITION;;;;;;;;;;;;;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -542,8 +578,8 @@
 
         (geom_2d_workingarea)
         (geom_2d_swingdoor)
-        
-        
+
+
         (misc)
         (block_build_insert_shelfs)
 
@@ -556,9 +592,9 @@
 
 
         (geom_2d_workingarea)
-        
-        
-        
+
+
+
         (misc)
         (block_build_insert_shelfs)
 
@@ -571,22 +607,31 @@
 
         (geom_2d_workingarea)
         (geom2d_sideboard)
-        
-        
+
+
         (misc)
-        (block_build_insert_shelfs)        
+        (block_build_insert_shelfs)
 
     )
     ((= furniture_typ 4)
         (setq furniture_name "Table")
 
-        (geom_2d_rectang)
 
 
-        (geom_3d_table)
-        
-        (misc)
-        (block_build_insert_tables)
+      (cond
+        ((= depth_cm 0)
+            (
+              (geom_2d_table_round)
+            )
+        )
+        (t
+          (geom_2d_rectang)
+          (geom_3d_table)
+        )
+      )
+
+      (misc)
+      (block_build_insert_tables)
 
     )
     ((= furniture_typ 5)
@@ -597,8 +642,8 @@
         (geom_2d_workingarea)
 
         (geom2d_desk_foot)
-        
-        
+
+
         (misc)
         (block_build_insert_tables)
 
@@ -622,29 +667,6 @@
 
 
 
-;test
-;
-;
-;
-
-
-
-
-
-
-
-  ;(setq loopbreaker 0)
-  ;(setq leng_ent (length '(entities)))
-
- ; (while (<= loopbreaker leng_ent)
-  ;  (setq loopbreaker (+ loopbreaker 1))
-   ; (print "loop")
-   ; (print loopbreaker)
-  ;)
-
-
-
-
 
 
 
@@ -653,9 +675,10 @@
 ;      (list
 ;            (cons 0 "BLOCK")
 ;            (cons 100 "AcDbEntity")
-;            (cons 102            entities )
 ;            (cons 100 "AcDbBlockBegin")
-;            (cons 2 "blockname")
+;            (cons 102  block_entities )
+;
+;            (cons 2 furniture_blockname)
 ;            (cons 70 2)
 ;            (cons 10 (list 0 0 0)) ;basepoint
 ;
@@ -667,16 +690,17 @@
   (setq insert_pt (getpoint "Pick insert Point!"))
 
 
-  (command "._insert" furniture_blockname "_Scale" 1 insert_pt 0 "")
-  ;
-  ;(entmake
-  ;    (list
-  ;          (cons 100 "acdbentity")
-  ;          (cons 100 "acdbblockreference")
-  ;          (cons 2 furniture_dim)
-  ;          (cons 10 blockbasepoint)
-  ;          
-  ;    )
-  ;)
+  ;(command "._insert" furniture_blockname "_Scale" 1 insert_pt 0 "")
+
+  (entmake
+    (list
+      (cons 0 "INSERT")
+      (cons 100 "acdbentity")
+      (cons 100 "acdbblockreference")
+      (cons 2 furniture_blockname)
+      (cons 10 blockbasepoint)
+
+    )
+  )
 
 )
