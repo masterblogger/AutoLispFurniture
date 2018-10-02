@@ -514,6 +514,45 @@
     (ssadd entity set2d)
 
   )
+  
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  (defun geom_2d_table_trapez ()
+    (setq 
+      angle_table 30
+      radians (* pi (/ angle_table 180.0))
+    )
+    
+    
+    
+    (setq distance_margin (* depth (/ (sin radians)(cos radians))  ))
+    
+    
+    (setq 
+      pt_1 (list 0 0 0)
+      
+      pt_2 (list width 0 0)
+      
+      pt_3x (- width distance_margin)
+      pt_3 (list pt_3x depth 0)
+      
+      pt_4 (list distance_margin depth 0)
+  
+      
+      pts (list pt_1 pt_2 pt_3 pt_4 pt_1)
+  )  
+  
+  
+  
+    (command ".-layer" "_set" layer_geom2d "")
+    (LWPOLY pts)
+    
+  
+    )    
+  
+  
+  
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defun block_build_insert_shelfs ()
     (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm) "_" (rtos furniture_height_cm)))
@@ -569,7 +608,7 @@
 
 
 
-  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP"))
+  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 15=Trapez table"))
   ;7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"
 
   (cond
@@ -663,6 +702,18 @@
 
         (misc)
         (block_build_insert_shelfs)
+
+    )
+    
+        ((= furniture_typ 15)
+        (setq furniture_name "Table_Trapezoid")
+        (geom_2d_table_trapez)
+        
+
+
+
+        (misc)
+        (block_build_insert_tables)
 
     )
   )
