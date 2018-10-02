@@ -326,7 +326,9 @@
 ; (setq base_x (+ 25 foot_k-factor))
 
 
-
+(if (= furniture_typ 11)
+  (setq depth depth_desk_2)
+)
 
 
 
@@ -523,9 +525,7 @@
       angle_table 30
       radians (* pi (/ angle_table 180.0))
     )
-    
-    
-    
+            
     (setq distance_margin (* depth (/ (sin radians)(cos radians))  ))
     
     
@@ -542,15 +542,64 @@
       
       pts (list pt_1 pt_2 pt_3 pt_4 pt_1)
   )  
-  
-  
-  
+      
     (command ".-layer" "_set" layer_geom2d "")
     (LWPOLY pts)
-    
-  
+      
     )    
   
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun geom_2d_desk_l ()
+    
+    (setq 
+      radius 500
+      width_desk_2 (getint "Enter Width 2 in [cm] ")
+      width_desk_2 (* 10 width_desk_2)
+      depth_desk_2 (getint "Enter depth 2 in [cm]")
+      depth_desk_2 (* 10 depth_desk_2)
+      
+    )
+    
+      (setq 
+        pt_1 (list 0 0 0)
+        pt_2 (list width 0 0  )
+        pt_3 (list width depth_desk_2 0)
+        pt_4  (list (+ width_desk_2 radius) depth_desk_2 0)             
+        
+        pt_5 (list width_desk_2 (+ depth_desk_2 radius))
+        pt_6 (list width_desk_2 depth 0)
+        pt_7 (list 0 depth 0)
+        
+        ; pt_5 will be erased if i've understand the arc dxf group code ....
+        pts (list pt_5 pt_6 pt_7 pt_1 pt_2 pt_3 pt_4 pt_5)
+        
+        arc_center (list (+ width_desk_2 radius) (+ depth_desk_2 radius))
+        
+        )
+    
+    (LWPOLY pts)
+    
+    ;ridiculous arc group code
+;    (entmake
+;      (list
+;        (cons 0 "ARC")
+;        (cons 100 "AcDbCircle")
+;        (cons 100 "AcDbArc")
+;        (cons 10 arc_center)
+;        (cons 40 radius)
+;        (cons 50 180)
+;        (cons 51 90)
+;      )
+;    )
+    
+    
+    ;add geom to entity list
+    (setq entity (entlast))
+    (ssadd entity set2d)
+    
+      )
+    
+    
   
   
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -608,7 +657,7 @@
 
 
 
-  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 15=Trapez table"))
+  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 11=L-Desk, 15=Trapez table"))
   ;7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"
 
   (cond
@@ -716,6 +765,23 @@
         (block_build_insert_tables)
 
     )
+      ((= furniture_typ 11)
+
+        (setq furniture_name "Desk")
+        (geom_2d_desk_l)
+
+        ;(geom_2d_workingarea)
+
+        (geom2d_desk_foot)
+
+
+        (misc)
+        (block_build_insert_tables)
+
+    )
+  
+  
+  
   )
 
 
