@@ -249,7 +249,7 @@
 ;if-condition because of round table
     (if (> depth 0)
       (setq furniture_dim (strcat (rtos width_cm) "x" (rtos depth_cm)))
-      (setq furniture_dim (strcat "Ø" (rtos width_cm)))
+      (setq furniture_dim (strcat "Ã˜" (rtos width_cm)))
     )
 
     (print furniture_dim)
