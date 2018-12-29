@@ -17,7 +17,7 @@
 
 
 
-(defun c:AC-Furniture (/ entities set2d furniture_dim)
+(defun c:AC=Furniture (/ entities set2d furniture_dim)
 
 
 
@@ -108,8 +108,8 @@
 
     (setq entity (entlast))
     (ssadd entity set2d)
-    
-    ;testing 
+
+    ;testing
     (setq blockelements (list ))
     (cons blockelements (entlast))
   )
@@ -249,7 +249,7 @@
 ;if-condition because of round table
     (if (> depth 0)
       (setq furniture_dim (strcat (rtos width_cm) "x" (rtos depth_cm)))
-      (setq furniture_dim (strcat "Ø" (rtos width_cm)))
+      (setq furniture_dim (strcat "�" (rtos width_cm)))
     )
 
     (print furniture_dim)
@@ -516,69 +516,73 @@
     (ssadd entity set2d)
 
   )
-  
-  
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
+
   (defun geom_2d_table_trapez ()
-    (setq 
+    (setq
       angle_table 30
       radians (* pi (/ angle_table 180.0))
     )
-            
+
     (setq distance_margin (* depth (/ (sin radians)(cos radians))  ))
-    
-    
-    (setq 
+
+
+    (setq
       pt_1 (list 0 0 0)
-      
+
       pt_2 (list width 0 0)
-      
+
       pt_3x (- width distance_margin)
       pt_3 (list pt_3x depth 0)
-      
+
       pt_4 (list distance_margin depth 0)
-  
-      
+
+
       pts (list pt_1 pt_2 pt_3 pt_4 pt_1)
-  )  
-      
+  )
+
     (command ".-layer" "_set" layer_geom2d "")
     (LWPOLY pts)
-      
-    )    
-  
+
+    )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defun geom_2d_desk_l ()
-    
-    (setq 
+
+    (setq
       radius 500
-      width_desk_2 (getint "Enter Width 2 in [cm] ")
+      width_desk_2 (getint "Enter Width 2 in [cm]") ; must be smaller then: " #\linefeed)
+;     (print width_cm)
       width_desk_2 (* 10 width_desk_2)
       depth_desk_2 (getint "Enter depth 2 in [cm]")
       depth_desk_2 (* 10 depth_desk_2)
-      
+
     )
-    
-      (setq 
+
+      (setq
         pt_1 (list 0 0 0)
         pt_2 (list width 0 0  )
         pt_3 (list width depth_desk_2 0)
-        pt_4  (list (+ width_desk_2 radius) depth_desk_2 0)             
-        
+        pt_4  (list (+ width_desk_2 radius) depth_desk_2 0)
+
         pt_5 (list width_desk_2 (+ depth_desk_2 radius))
         pt_6 (list width_desk_2 depth 0)
         pt_7 (list 0 depth 0)
-        
+
         ; pt_5 will be erased if i've understand the arc dxf group code ....
         pts (list pt_5 pt_6 pt_7 pt_1 pt_2 pt_3 pt_4 pt_5)
-        
+
         arc_center (list (+ width_desk_2 radius) (+ depth_desk_2 radius))
-        
+
         )
-    
+
     (LWPOLY pts)
-    
+
     ;ridiculous arc group code
 ;    (entmake
 ;      (list
@@ -591,17 +595,17 @@
 ;        (cons 51 90)
 ;      )
 ;    )
-    
-    
+
+
     ;add geom to entity list
     (setq entity (entlast))
     (ssadd entity set2d)
-    
+
       )
-    
-    
-  
-  
+
+
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defun block_build_insert_shelfs ()
     (setq furniture_blockname (strcat furniture_name "_" (rtos width_cm) "x" (rtos depth_cm) "_" (rtos furniture_height_cm)))
@@ -648,17 +652,41 @@
   (layermake layer_geom2d_wa 4)       ;1=red 4=cyan
   (layermake layer_att 255)           ;255 = white
 
-	;get basic values and scale them to millimiter
-  (setq width_cm (getreal "\Enter furniture WIDTH [cm]: "))
-  (setq depth_cm (getreal "\nEnter furniture DEPTH [cm]: "))
+
+  ;avoid typing larger numbers then available
+  (while (< furniture_values 1)
+    (setq furniture_values 0)
+
+  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 11=L-Desk, 15=Trapez table"))
+  ;7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"
+  (if (> furniture_typ 15)
+  (setq furniture_values 0)
+  (setq furniture_values 1)
+
+  )
+
+  )
+
+  ;inform about round table if table was choosen
+  (if (= furniture_typ 4 )
+      (progn
+        (print "HINT for circular table set depth to zero.")
+        (setq width_cm (getreal "\Enter furniture WIDTH [cm]: "))
+        (setq depth_cm (getreal "\nEnter furniture DEPTH [cm]: "))
+      )
+      (progn
+        (setq width_cm (getreal "\Enter furniture WIDTH [cm]: "))
+        (setq depth_cm (getreal "\nEnter furniture DEPTH [cm]: "))
+      )
+)
+
+  ;get basic values and scale them to millimiter
+
 
   (setq width (* width_cm 10))
   (setq depth (* depth_cm 10))
 
 
-
-  (setq furniture_typ (getint "1=filling cabinet 2=Shelf 3=sideboard 4=table, 5=desk, 6=filling cabinet UP, 11=L-Desk, 15=Trapez table"))
-  ;7=sideboard UP,8 shelf UP, 9=Sofa, 10=Bed, 11=L-Desk, 12=Drawer Cabinet, 13=Pedestral Mobile, 14=locker, 15=Trapez table"
 
   (cond
     ((= furniture_typ 1)
@@ -753,11 +781,11 @@
         (block_build_insert_shelfs)
 
     )
-    
+
         ((= furniture_typ 15)
         (setq furniture_name "Table_Trapezoid")
         (geom_2d_table_trapez)
-        
+
 
 
 
@@ -767,7 +795,7 @@
     )
       ((= furniture_typ 11)
 
-        (setq furniture_name "Desk")
+        (setq furniture_name "Desk-L")
         (geom_2d_desk_l)
 
         ;(geom_2d_workingarea)
@@ -779,9 +807,9 @@
         (block_build_insert_tables)
 
     )
-  
-  
-  
+
+
+
   )
 
 
@@ -791,7 +819,7 @@
 
 
 
-;; Comming Soon 
+;; Comming Soon
 ;;(entmake
 ;;      (list
 ;;            (cons 0 "BLOCK")
@@ -812,7 +840,7 @@
   (setq insert_pt (getpoint "Pick insert Point!"))
 
 
-  
+
 
   (entmake
     (list
